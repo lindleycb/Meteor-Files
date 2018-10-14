@@ -1,6 +1,6 @@
 Package.describe({
   name: 'zuuk:files',
-  version: '2.0.0',
+  version: '2.0.1',
   summary: 'Fork of ostrio:files with tweaks - File upload via DDP/HTTP to server, 3rd party storage support: AWS S3, GridFS, DropBox and others',
   git: 'https://github.com/lindleycb/Meteor-Files',
   documentation: 'README.md'
