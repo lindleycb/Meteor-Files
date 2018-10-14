@@ -1,8 +1,8 @@
 Package.describe({
-  name: 'ostrio:files',
-  version: '1.10.2',
-  summary: 'File upload via DDP/HTTP to server, 3rd party storage support: AWS S3, GridFS, DropBox and others',
-  git: 'https://github.com/VeliovGroup/Meteor-Files',
+  name: 'zuuk:files',
+  version: '2.0.0',
+  summary: 'Fork of ostrio:files with tweaks - File upload via DDP/HTTP to server, 3rd party storage support: AWS S3, GridFS, DropBox and others',
+  git: 'https://github.com/lindleycb/Meteor-Files',
   documentation: 'README.md'
 });
 
@@ -10,7 +10,8 @@ Npm.depends({
   'fs-extra': '7.0.0',
   'request': '2.88.0',
   'file-type': '9.0.0',
-  'eventemitter3': '3.1.0'
+  'eventemitter3': '3.1.0',
+  'cookie-parser': '1.4.3'
 });
 
 Package.onUse(function(api) {

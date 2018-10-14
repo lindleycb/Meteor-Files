@@ -14,12 +14,23 @@ import request  from 'request';
 import fileType from 'file-type';
 import nodePath from 'path';
 
+var cookieParser = Npm.require('cookie-parser');
+
 /*
  * @const {Object} bound  - Meteor.bindEnvironment (Fiber wrapper)
  * @const {Function} NOOP - No Operation function, placeholder for required callbacks
  */
 const bound = Meteor.bindEnvironment(callback => callback());
 const NOOP  = () => {  };
+
+let getUser = (http) => {
+    const cookie = http.request.Cookies;
+    if (cookie.get('meteor_login_token')) {
+        let tok = cookie.get('meteor_login_token');
+        return Meteor.users.findOne({"services.resume.loginTokens.hashedToken": Accounts._hashLoginToken(tok)});
+    }
+    return null;
+}
 
 /*
  * @locus Anywhere
@@ -432,7 +443,9 @@ export class FilesCollection extends FilesCollectionCore {
     if (this.disableUpload && this.disableDownload) {
       return;
     }
-    WebApp.connectHandlers.use((httpReq, httpResp, next) => {
+    WebApp.connectHandlers
+        .use(cookieParser())
+        .use((httpReq, httpResp, next) => {
       if (!this.disableUpload && !!~httpReq._parsedUrl.path.indexOf(`${this.downloadRoute}/${this.collectionName}/__upload`)) {
         if (httpReq.method === 'POST') {
           const handleError = (_error) => {
@@ -1039,11 +1052,6 @@ export class FilesCollection extends FilesCollectionCore {
       let mtok = null;
       if (http.request.headers['x-mtok']) {
         mtok = http.request.headers['x-mtok'];
-      } else {
-        const cookie = http.request.Cookies;
-        if (cookie.has('x_mtok')) {
-          mtok = cookie.get('x_mtok');
-        }
       }
 
       if (mtok) {
@@ -1053,6 +1061,13 @@ export class FilesCollection extends FilesCollectionCore {
           result.user   = () => Meteor.users.findOne(userId);
           result.userId = userId;
         }
+      }
+
+      // ZUUK patch to get the user from cookies
+      let user = getUser(http);
+      if (user) {
+          result.user   = () => Meteor.users.findOne(user._id);
+          result.userId = user._id;
       }
     }
 
